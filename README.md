@@ -1,4 +1,4 @@
-# MIS 3371 — Study Room Reservation System
+# MIS 3371 — Section-26252-Group-4-Study Room Reservation System
 
 This repository contains design artifacts and the working transaction interface for the MIS 3371 Transaction Processing Systems I capstone project.
 
