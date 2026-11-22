@@ -1,146 +1,81 @@
+// Public AWS API Gateway endpoint connected to the TransactionProcessor Lambda.
+// This is a classroom demonstration. Do not submit real student information.
+const API_URL = "https://hqf8dtpys7.execute-api.us-east-2.amazonaws.com/default/TransactionProcessor";
 const STUDY_ROOM_CAPACITY = 6;
-const API_BASE_URL = (window.STUDY_ROOM_API_BASE_URL || "").replace(/\/$/, "");
 
 function fitsRoomCapacity(partySize) {
-  return Number.isInteger(partySize) && partySize >= 1 && partySize <= STUDY_ROOM_CAPACITY;
+  return partySize > 0 && partySize <= STUDY_ROOM_CAPACITY;
 }
 
-function setResult(element, message, kind = "info") {
-  element.hidden = false;
-  element.className = `result-panel result-panel--${kind}`;
-  element.textContent = message;
-}
-
-function formatReservation(record) {
-  return [
-    `Reservation ID: ${record.reservationId || record.reservation_id || "N/A"}`,
-    `Status: ${record.status || "N/A"}`,
-    `Student ID: ${record.studentId || "N/A"}`,
-    `Room: ${record.roomId || "N/A"}`,
-    `Date: ${record.reservationDate || "N/A"}`,
-    `Time: ${record.startTime || "N/A"} - ${record.endTime || "N/A"}`,
-    `Attendees: ${record.partySize ?? "N/A"}`
-  ].join("\n");
-}
-
+const form = document.querySelector("form");
 const partySizeInput = document.querySelector("#partySize");
 const capacityMessage = document.querySelector("#capacityMessage");
-const reservationForm = document.querySelector("#reservationForm");
-const submissionResult = document.querySelector("#submissionResult");
-const submitButton = document.querySelector("#submitButton");
-const lookupForm = document.querySelector("#lookupForm");
-const lookupResult = document.querySelector("#lookupResult");
-const lookupButton = document.querySelector("#lookupButton");
+const reservationResult = document.querySelector("#reservationResult");
+const submitButton = form.querySelector('button[type="submit"]');
 
+// Retain the original immediate attendee-capacity feedback.
 partySizeInput.addEventListener("input", () => {
-  const rawPartySize = partySizeInput.value.trim();
-
-  if (rawPartySize === "") {
+  const raw = partySizeInput.value.trim();
+  if (raw === "") {
     capacityMessage.textContent = "";
     capacityMessage.className = "capacity-message";
     return;
   }
 
-  const partySize = Number(rawPartySize);
-  const roomFits = fitsRoomCapacity(partySize);
-
+  const partySize = Number(raw);
+  const roomFits = Number.isInteger(partySize) && fitsRoomCapacity(partySize);
   capacityMessage.textContent = roomFits
-    ? "This group fits the study room."
-    : "Attendees must be a whole number from 1 through 6.";
+    ? "This group fits the selected study room."
+    : partySize > STUDY_ROOM_CAPACITY
+      ? `This group exceeds the study room capacity of ${STUDY_ROOM_CAPACITY}.`
+      : "Enter a positive whole number of attendees.";
   capacityMessage.className = roomFits
     ? "capacity-message capacity-message--success"
     : "capacity-message capacity-message--error";
 });
 
-reservationForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Do not reload the page or submit to '#'.
 
-  if (!API_BASE_URL) {
-    setResult(submissionResult, "API endpoint is not configured. Set STUDY_ROOM_API_BASE_URL in config.js.", "error");
-    return;
-  }
-
-  const formData = new FormData(reservationForm);
-  const payload = {
-    studentId: String(formData.get("studentId") || "").trim(),
-    roomId: String(formData.get("roomId") || "").trim(),
-    reservationDate: String(formData.get("reservationDate") || "").trim(),
-    startTime: String(formData.get("startTime") || "").trim(),
-    endTime: String(formData.get("endTime") || "").trim(),
-    partySize: Number(formData.get("partySize"))
+  const reservation = {
+    studentId: document.querySelector("#studentId").value.trim(),
+    room: document.querySelector("#room").value,
+    reservationDate: document.querySelector("#reservationDate").value,
+    startTime: document.querySelector("#startTime").value,
+    duration: document.querySelector("#duration").value,
+    partySize: partySizeInput.value
   };
 
-  if (!fitsRoomCapacity(payload.partySize)) {
-    setResult(submissionResult, "Attendees must be a whole number from 1 through 6.", "error");
-    return;
-  }
-
   submitButton.disabled = true;
-  setResult(submissionResult, "Submitting reservation...", "info");
+  reservationResult.className = "reservation-result reservation-result--pending";
+  reservationResult.textContent = "Sending reservation to AWS...";
 
   try {
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(reservation)
     });
-
-    const body = await response.json().catch(() => ({}));
+    const data = await response.json();
 
     if (!response.ok) {
-      setResult(submissionResult, body.message || `Request failed with status ${response.status}.`, "error");
-      return;
-    }
-
-    const reservation = body.reservation || body;
-    const reservationId = reservation.reservationId || body.reservationId;
-    setResult(
-      submissionResult,
-      `Reservation submitted successfully.\nConfirmation number: ${reservationId}\n\n${formatReservation(reservation)}`,
-      "success"
-    );
-
-    if (reservationId) {
-      document.querySelector("#lookupId").value = reservationId;
+      reservationResult.className = "reservation-result reservation-result--error";
+      reservationResult.textContent = `Validation error: ${data.message || "The request was not accepted."}`;
+    } else if (data.status === "Confirmed") {
+      reservationResult.className = "reservation-result reservation-result--success";
+      reservationResult.textContent = `Confirmed! Reservation ID: ${data.reservation_id}. ${data.message || "Reservation confirmed."}`;
+    } else if (data.status === "Rejected") {
+      reservationResult.className = "reservation-result reservation-result--error";
+      reservationResult.textContent = `Rejected: ${data.message || data.rejection_reason || "Reservation not available."}`;
+    } else {
+      reservationResult.className = "reservation-result reservation-result--error";
+      reservationResult.textContent = data.message || "Unexpected response from the reservation service.";
     }
   } catch (error) {
-    setResult(submissionResult, "Could not reach the backend. Verify the deployed API URL and CORS configuration.", "error");
+    console.error("API request failed:", error);
+    reservationResult.className = "reservation-result reservation-result--error";
+    reservationResult.textContent = "Could not connect to AWS. Check the API URL, CORS settings, and deployment.";
   } finally {
     submitButton.disabled = false;
-  }
-});
-
-lookupForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  if (!API_BASE_URL) {
-    setResult(lookupResult, "API endpoint is not configured. Set STUDY_ROOM_API_BASE_URL in config.js.", "error");
-    return;
-  }
-
-  const reservationId = document.querySelector("#lookupId").value.trim();
-  if (!reservationId) {
-    setResult(lookupResult, "Enter a confirmation number.", "error");
-    return;
-  }
-
-  lookupButton.disabled = true;
-  setResult(lookupResult, "Retrieving saved transaction...", "info");
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/reservations/${encodeURIComponent(reservationId)}`);
-    const body = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      setResult(lookupResult, body.message || `Lookup failed with status ${response.status}.`, "error");
-      return;
-    }
-
-    const reservation = body.reservation || body;
-    setResult(lookupResult, `Saved transaction retrieved from the backend.\n\n${formatReservation(reservation)}`, "success");
-  } catch (error) {
-    setResult(lookupResult, "Could not reach the backend. Verify the deployed API URL and CORS configuration.", "error");
-  } finally {
-    lookupButton.disabled = false;
   }
 });
