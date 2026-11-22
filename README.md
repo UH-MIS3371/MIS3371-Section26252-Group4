@@ -74,6 +74,8 @@ The Week 3 activity defines the design requirements but does not specify detaile
 
 ## Milestone 4 — Final Technical Milestone
 
+**Current deployed Amplify URL:** https://main.dszcwlgff57mb.amplifyapp.com/
+
 Milestone 4 requires the deployed application to submit, persist, and retrieve a transaction.
 
 Added Milestone 4 implementation files:
