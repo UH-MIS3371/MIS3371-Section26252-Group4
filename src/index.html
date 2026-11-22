@@ -12,7 +12,7 @@
     <header class="page-header">
       <p class="eyebrow">Campus Services</p>
       <h1>Study Room Reservation</h1>
-      <p>Request one study room for a specific date, time, duration, and group size.</p>
+      <p>Classroom demo. Use a test student ID such as TEST-001.</p>
     </header>
 
     <section class="form-card" aria-labelledby="reservation-heading">
@@ -45,14 +45,8 @@
           </div>
 
           <div class="form-group">
-            <label for="duration">Duration</label>
-            <select id="duration" name="duration" required>
-              <option value="" selected disabled>Choose a duration</option>
-              <option value="30">30 minutes</option>
-              <option value="60">1 hour</option>
-              <option value="90">1 hour 30 minutes</option>
-              <option value="120">2 hours</option>
-            </select>
+            <label for="endTime">End Time</label>
+            <input id="endTime" name="endTime" type="time" required>
           </div>
 
           <div class="form-group">
@@ -64,6 +58,18 @@
 
         <button type="submit">Request Reservation</button>
         <p id="reservationResult" class="reservation-result" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="form-card" aria-labelledby="lookup-heading">
+      <h2 id="lookup-heading">Find Reservation</h2>
+      <form id="lookupForm">
+        <div class="form-group">
+          <label for="lookupId">Reservation ID</label>
+          <input id="lookupId" name="lookupId" type="text" maxlength="80" required>
+        </div>
+        <button type="submit">Find Reservation</button>
+        <p id="lookupResult" class="reservation-result" role="status" aria-live="polite"></p>
       </form>
     </section>
   </main>

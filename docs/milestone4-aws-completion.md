@@ -1,59 +1,21 @@
-# Milestone 4 AWS Completion Guide
+# Milestone 4 AWS Deployment
 
-Milestone 4 requires a live deployed application that can submit a transaction, return a confirmation number, save it persistently, and retrieve it by that confirmation number.
+[Deployed Amplify site](https://main.d2pj03nocmnuea.amplifyapp.com/)
 
-## Required AWS resources
+| Component | Deployment configuration |
+| --- | --- |
+| Amplify | `StudyRoomReservationM4`, branch `main`. Deploy the contents of `src/` at the site root. |
+| API Gateway | `StudyRoomReservation-API`, HTTP API, `default` stage, browser CORS enabled. |
+| Lambda | `StudyRoomReservation` in `us-east-1`, Node.js 24, handler `index.handler`, source `aws/lambda/index.mjs`. |
+| DynamoDB | `StudyRoomReservationsM4` in `us-east-1`, on-demand capacity, String partition key `pk`. |
 
-### 1. DynamoDB
-Create a table:
+The frontend in `src/app.js` uses the deployed API endpoint. It sends a plain-text JSON body with `POST /default/StudyRoomReservation` and looks up records with `GET /default/StudyRoomReservation?id=<confirmation-id>`.
 
-- **Table name:** `StudyRoomReservations`
-- **Partition key:** `reservationId` (String)
-- On-demand capacity is sufficient for the class project.
+Lambda reads the room schedule and uses a conditional DynamoDB transaction to write the schedule and reservation together. The execution role needs read and transactional write access to the table.
 
-### 2. Lambda
-Use the existing **StudyRoomReservation** Lambda or deploy `aws/lambda/index.js`.
+## Verify the deployment
 
-Set environment variable:
-
-```text
-TABLE_NAME=StudyRoomReservations
-```
-
-The Lambda execution role must permit:
-- `dynamodb:GetItem`
-- `dynamodb:PutItem`
-- `dynamodb:Scan`
-
-The project previously used the existing Academy `LabRole`; verify that the role still has DynamoDB access.
-
-### 3. API Gateway
-The frontend expects these routes:
-
-- `POST /reservations`
-- `GET /reservations/{reservationId}`
-- `OPTIONS` support / CORS for browser requests
-
-Both routes should integrate with the same Lambda.
-
-### 4. Frontend configuration
-Edit `src/config.js` and paste the API Gateway base URL:
-
-```js
-window.STUDY_ROOM_API_BASE_URL = "https://YOUR-API-ID.execute-api.us-east-1.amazonaws.com";
-```
-
-Do not add `/reservations` to the configured value; `app.js` adds the route.
-
-### 5. Amplify
-Deploy the `src` folder contents as the frontend.
-
-Verify the final public URL:
-1. Page loads.
-2. Valid reservation returns a confirmation number.
-3. Copy that number into **Retrieve Saved Transaction**.
-4. Retrieval displays the same saved reservation.
-5. Reload the browser and retrieve again to prove persistent storage.
-
-## Milestone 4 live verification
-Do not mark a test as Passed until the live Amplify site and AWS backend actually produce the expected result.
+1. Open the deployed site and submit a booking with a synthetic ID such as `TEST-DEMO`.
+2. Copy the returned confirmation ID and refresh the page.
+3. Paste the ID in **Find Reservation** and verify that the saved details match.
+4. Submit an overlapping request for the same room and date, then look up `RSV-NOT-FOUND` to check both rejection paths.

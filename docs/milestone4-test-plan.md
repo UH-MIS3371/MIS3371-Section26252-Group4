@@ -17,4 +17,6 @@ The Excel deliverable created for Milestone 4 uses these core cases:
 11. Retrieve a known saved confirmation number.
 12. Retrieve a nonexistent confirmation number.
 
-Actual results must be filled from the live deployed application. Do not record a test as Passed based only on code review.
+## Live verification on November 22, 2026
+
+All 12 cases passed on the [deployed Amplify site](https://main.d2pj03nocmnuea.amplifyapp.com/). The final test matrix records the actual results and evidence for each case. Separate API checks returned HTTP 201 for a saved reservation, 409 for an overlap, 200 for a saved ID, and 404 for an unknown ID.
