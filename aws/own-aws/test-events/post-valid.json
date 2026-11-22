@@ -1,0 +1,8 @@
+{
+  "requestContext": {
+    "http": {
+      "method": "POST"
+    }
+  },
+  "body": "{\"studentId\":\"2145678\",\"room\":\"library-201\",\"reservationDate\":\"2026-11-30\",\"startTime\":\"14:00\",\"duration\":\"60\",\"partySize\":\"4\"}"
+}
