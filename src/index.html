@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campus Study Room Reservation</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -12,13 +13,13 @@
     <header class="page-header">
       <p class="eyebrow">Campus Services</p>
       <h1>Study Room Reservation</h1>
-      <p>Request one study room for a specific date, time, duration, and group size.</p>
+      <p>Submit and retrieve study-room reservation transactions.</p>
     </header>
 
     <section class="form-card" aria-labelledby="reservation-heading">
       <h2 id="reservation-heading">Reservation Details</h2>
 
-      <form action="#" method="post">
+      <form id="reservationForm">
         <div class="form-grid">
           <div class="form-group">
             <label for="studentId">Student ID</label>
@@ -27,10 +28,10 @@
 
           <div class="form-group">
             <label for="room">Room</label>
-            <select id="room" name="room" required>
+            <select id="room" name="roomId" required>
               <option value="" selected disabled>Choose a room</option>
-              <option value="library-201">Library 201</option>
-              <option value="library-202">Library 202</option>
+              <option value="StudyRoom1">Study Room 1</option>
+              <option value="StudyRoom2">Study Room 2</option>
             </select>
           </div>
 
@@ -45,25 +46,33 @@
           </div>
 
           <div class="form-group">
-            <label for="duration">Duration</label>
-            <select id="duration" name="duration" required>
-              <option value="" selected disabled>Choose a duration</option>
-              <option value="30">30 minutes</option>
-              <option value="60">1 hour</option>
-              <option value="90">1 hour 30 minutes</option>
-              <option value="120">2 hours</option>
-            </select>
+            <label for="endTime">End Time</label>
+            <input id="endTime" name="endTime" type="time" required>
           </div>
 
           <div class="form-group">
             <label for="partySize">Number of Attendees</label>
-            <input id="partySize" name="partySize" type="number" min="1" step="1" placeholder="Maximum 6" required>
+            <input id="partySize" name="partySize" type="number" min="1" max="6" step="1" placeholder="Maximum 6" required>
             <p id="capacityMessage" class="capacity-message" aria-live="polite"></p>
           </div>
         </div>
 
-        <button type="submit">Request Reservation</button>
+        <button id="submitButton" type="submit">Request Reservation</button>
       </form>
+
+      <div id="submissionResult" class="result-panel" aria-live="polite" hidden></div>
+    </section>
+
+    <section class="form-card lookup-card" aria-labelledby="lookup-heading">
+      <h2 id="lookup-heading">Retrieve Saved Transaction</h2>
+      <form id="lookupForm" class="lookup-form">
+        <div class="form-group">
+          <label for="lookupId">Confirmation / Reservation Number</label>
+          <input id="lookupId" name="lookupId" type="text" placeholder="Example: RSV-..." required>
+        </div>
+        <button id="lookupButton" type="submit">Retrieve Reservation</button>
+      </form>
+      <div id="lookupResult" class="result-panel" aria-live="polite" hidden></div>
     </section>
   </main>
 </body>
