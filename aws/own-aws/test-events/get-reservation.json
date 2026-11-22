@@ -1,0 +1,10 @@
+{
+  "requestContext": {
+    "http": {
+      "method": "GET"
+    }
+  },
+  "queryStringParameters": {
+    "reservation_id": "REPLACE_WITH_A_REAL_RESERVATION_ID"
+  }
+}
