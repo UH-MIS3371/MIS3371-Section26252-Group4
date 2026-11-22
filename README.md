@@ -101,3 +101,16 @@ Before the final Canvas submission, the team must:
 6. Run the final test matrix against the live site and record actual results.
 
 Do not describe a test as passed or a transaction as persistent until it has been verified on the deployed AWS application.
+
+
+### Latest Team Deployment Bundle (Nov. 21–22, 2026)
+
+The frontend in `src/` has been synchronized to the team-provided `StudyRoomReservation.zip` that accompanied the current Amplify URL.
+
+Current deployed frontend behavior:
+- Submits reservations to the team's AWS API Gateway / `TransactionProcessor` Lambda.
+- Performs immediate six-person capacity feedback in the browser.
+- Displays Confirmed / Rejected responses returned by AWS.
+- Displays the returned `reservation_id` when a reservation is confirmed.
+
+The team-provided frontend bundle does **not** currently include a transaction-retrieval interface. Milestone 4 still requires verification that a saved transaction can be retrieved by its confirmation / transaction number.
