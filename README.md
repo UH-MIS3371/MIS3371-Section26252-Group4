@@ -71,46 +71,15 @@ The Week 3 activity defines the design requirements but does not specify detaile
 6. Application logic is authoritative for critical validation, business rules, and state transitions.
 7. The data tier preserves the official transaction, status, rejection reason, timestamps, and audit record.
 
-
 ## Milestone 4 — Final Technical Milestone
 
-**Current deployed Amplify URL:** https://main.dszcwlgff57mb.amplifyapp.com/
+[Open the verified Amplify deployment](https://main.d2pj03nocmnuea.amplifyapp.com/).
 
-Milestone 4 requires the deployed application to submit, persist, and retrieve a transaction.
+Use a classroom test ID such as `TEST-DEMO` and an available room, date, and time. Submit the reservation, copy the confirmation ID, refresh the page, and use **Find Reservation** to retrieve it. The application saves confirmed requests in DynamoDB and rejects overlapping reservations for the same room.
 
-Added Milestone 4 implementation files:
+- [Deployed AWS configuration](docs/milestone4-aws-completion.md)
+- [Test plan and verification summary](docs/milestone4-test-plan.md)
+- [Individual demo checklist](docs/milestone4-demo-checklist.md)
+- [Lambda source](aws/lambda/index.mjs)
 
-- `src/config.js` — API Gateway base URL configuration
-- `src/app.js` — frontend submission and retrieval calls
-- `aws/lambda/index.js` — Lambda validation, DynamoDB persistence, confirmation-number generation, overlap checking, and retrieval
-- `docs/milestone4-aws-completion.md` — AWS deployment/completion instructions
-- `docs/milestone4-test-plan.md` — required test scenarios
-- `docs/milestone4-demo-checklist.md` — individual recording flow
-
-### Live verification still required
-
-Before the final Canvas submission, the team must:
-
-1. Create/verify the DynamoDB `StudyRoomReservations` table using `reservationId` as the String partition key.
-2. Deploy the current Lambda and ensure its role can read/write the table.
-3. Configure API Gateway routes:
-   - `POST /reservations`
-   - `GET /reservations/{reservationId}`
-4. Put the deployed API Gateway base URL in `src/config.js`.
-5. Redeploy the `src` frontend to Amplify.
-6. Run the final test matrix against the live site and record actual results.
-
-Do not describe a test as passed or a transaction as persistent until it has been verified on the deployed AWS application.
-
-
-### Latest Team Deployment Bundle (Nov. 21–22, 2026)
-
-The frontend in `src/` has been synchronized to the team-provided `StudyRoomReservation.zip` that accompanied the current Amplify URL.
-
-Current deployed frontend behavior:
-- Submits reservations to the team's AWS API Gateway / `TransactionProcessor` Lambda.
-- Performs immediate six-person capacity feedback in the browser.
-- Displays Confirmed / Rejected responses returned by AWS.
-- Displays the returned `reservation_id` when a reservation is confirmed.
-
-The team-provided frontend bundle does **not** currently include a transaction-retrieval interface. Milestone 4 still requires verification that a saved transaction can be retrieved by its confirmation / transaction number.
+All 12 Milestone 4 cases passed on the deployed site on November 22, 2026.

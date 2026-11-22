@@ -15,9 +15,9 @@ Canvas requires every student to record their own real-time demonstration.
 
 3. **Valid transaction**
    - Submit a valid reservation, for example:
-     - Student ID: `2145678`
-     - Room: `StudyRoom1`
-     - Date: use a future date
+     - Student ID: `TEST-DEMO`
+     - Room: Library 201
+     - Date: use a future date with an available time
      - Start: `14:00`
      - End: `15:00`
      - Attendees: `4`
@@ -28,10 +28,10 @@ Canvas requires every student to record their own real-time demonstration.
    - Paste the returned confirmation number into the retrieval box.
    - Retrieve it.
    - Point out that the saved values match the submitted transaction.
-   - Optional strong evidence: refresh the page and retrieve the same ID again.
+   - Refresh the page and retrieve the same ID again to demonstrate persistence.
 
 5. **Boundary case**
-   - Submit **6 attendees**.
+   - Submit **6 attendees** in an available time slot.
    - Explain that 6 is the maximum allowed and should be accepted.
 
 6. **Invalid / business-rule cases**
