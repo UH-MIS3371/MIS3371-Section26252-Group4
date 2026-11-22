@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campus Study Room Reservation</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -18,7 +19,7 @@
     <section class="form-card" aria-labelledby="reservation-heading">
       <h2 id="reservation-heading">Reservation Details</h2>
 
-      <form action="#" method="post">
+      <form id="reservationForm" action="#" method="post">
         <div class="form-grid">
           <div class="form-group">
             <label for="studentId">Student ID</label>
@@ -65,6 +66,21 @@
         <button type="submit">Request Reservation</button>
         <p id="reservationResult" class="reservation-result" role="status" aria-live="polite"></p>
       </form>
+    </section>
+
+    <section class="form-card lookup-card" aria-labelledby="lookup-heading">
+      <h2 id="lookup-heading">Retrieve Reservation</h2>
+      <p class="lookup-help">Enter the reservation ID returned after a successful submission.</p>
+
+      <form id="lookupForm" class="lookup-form">
+        <div class="form-group">
+          <label for="reservationId">Reservation ID</label>
+          <input id="reservationId" name="reservationId" type="text" placeholder="RSV-..." required>
+        </div>
+        <button type="submit">Retrieve Reservation</button>
+      </form>
+
+      <pre id="lookupResult" class="lookup-result" role="status" aria-live="polite"></pre>
     </section>
   </main>
 </body>
