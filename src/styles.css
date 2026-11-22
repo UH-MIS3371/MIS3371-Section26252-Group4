@@ -76,6 +76,10 @@ h2 {
   box-shadow: 0 18px 45px rgba(30, 58, 95, 0.12);
 }
 
+.lookup-card {
+  margin-top: 1.5rem;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -151,13 +155,80 @@ button:hover {
   background: var(--primary-dark);
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.reservation-result {
+  margin-top: 1rem;
+  padding: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.reservation-result--success {
+  color: var(--success);
+}
+
+.reservation-result--error {
+  color: var(--error);
+}
+
+.reservation-result--pending {
+  color: var(--muted);
+}
+
+.lookup-help {
+  margin-top: -0.7rem;
+  color: var(--muted);
+}
+
+.lookup-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.lookup-form button {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.lookup-result {
+  min-height: 0;
+  margin: 1rem 0 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  white-space: pre-wrap;
+}
+
+.lookup-result--success {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.lookup-result--error {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.lookup-result--pending {
+  color: var(--muted);
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
   .page-shell {
     width: min(100% - 1rem, 860px);
     padding-block: 1.5rem;
   }
 
-  .form-grid {
+  .form-grid,
+  .lookup-form {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -165,15 +236,3 @@ button:hover {
     width: 100%;
   }
 }
-
-/* Frontend display of AWS Lambda reservation responses */
-.reservation-result {
-  margin-top: 1rem;
-  padding: 0;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-.reservation-result--success { color: var(--success); }
-.reservation-result--error { color: var(--error); }
-.reservation-result--pending { color: var(--muted); }
-button:disabled { opacity: 0.6; cursor: wait; }
