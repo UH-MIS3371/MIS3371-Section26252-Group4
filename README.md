@@ -70,3 +70,32 @@ The Week 3 activity defines the design requirements but does not specify detaile
 5. A confirmed reservation may be cancelled before its scheduled start time.
 6. Application logic is authoritative for critical validation, business rules, and state transitions.
 7. The data tier preserves the official transaction, status, rejection reason, timestamps, and audit record.
+
+
+## Milestone 4 — Final Technical Milestone
+
+Milestone 4 requires the deployed application to submit, persist, and retrieve a transaction.
+
+Added Milestone 4 implementation files:
+
+- `src/config.js` — API Gateway base URL configuration
+- `src/app.js` — frontend submission and retrieval calls
+- `aws/lambda/index.js` — Lambda validation, DynamoDB persistence, confirmation-number generation, overlap checking, and retrieval
+- `docs/milestone4-aws-completion.md` — AWS deployment/completion instructions
+- `docs/milestone4-test-plan.md` — required test scenarios
+- `docs/milestone4-demo-checklist.md` — individual recording flow
+
+### Live verification still required
+
+Before the final Canvas submission, the team must:
+
+1. Create/verify the DynamoDB `StudyRoomReservations` table using `reservationId` as the String partition key.
+2. Deploy the current Lambda and ensure its role can read/write the table.
+3. Configure API Gateway routes:
+   - `POST /reservations`
+   - `GET /reservations/{reservationId}`
+4. Put the deployed API Gateway base URL in `src/config.js`.
+5. Redeploy the `src` frontend to Amplify.
+6. Run the final test matrix against the live site and record actual results.
+
+Do not describe a test as passed or a transaction as persistent until it has been verified on the deployed AWS application.
