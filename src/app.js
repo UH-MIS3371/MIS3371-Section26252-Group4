@@ -35,7 +35,15 @@ partySizeInput.addEventListener("input", () => {
 });
 
 form.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Do not reload the page or submit to '#'.
+  event.preventDefault();
+
+  const partySize = Number(partySizeInput.value);
+
+  if (!Number.isInteger(partySize) || !fitsRoomCapacity(partySize)) {
+    reservationResult.className = "reservation-result reservation-result--error";
+    reservationResult.textContent = "Reservations require between 1 and 6 attendees.";
+    return;
+  }
 
   const reservation = {
     studentId: document.querySelector("#studentId").value.trim(),
