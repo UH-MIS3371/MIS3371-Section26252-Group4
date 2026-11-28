@@ -1,34 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Campus Study Room Reservation</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <script src="app.js" defer=""></script>
 </head>
 <body>
   <main class="page-shell">
     <header class="page-header">
       <p class="eyebrow">Campus Services</p>
       <h1>Study Room Reservation</h1>
-      <p>Classroom demo. Use a test student ID such as TEST-001.</p>
+      <p>Request one study room for a specific date, time, duration, and group size. Classroom demo: use fictional student information.</p>
     </header>
 
     <section class="form-card" aria-labelledby="reservation-heading">
       <h2 id="reservation-heading">Reservation Details</h2>
 
-      <form action="#" method="post">
+      <form id="reservationForm" action="#" method="post">
         <div class="form-grid">
           <div class="form-group">
             <label for="studentId">Student ID</label>
-            <input id="studentId" name="studentId" type="text" required>
+            <input id="studentId" name="studentId" type="text" required="">
           </div>
 
           <div class="form-group">
             <label for="room">Room</label>
-            <select id="room" name="room" required>
-              <option value="" selected disabled>Choose a room</option>
+            <select id="room" name="room" required="">
+              <option value="" selected="" disabled="">Choose a room</option>
               <option value="library-201">Library 201</option>
               <option value="library-202">Library 202</option>
             </select>
@@ -36,22 +35,28 @@
 
           <div class="form-group">
             <label for="reservationDate">Reservation Date</label>
-            <input id="reservationDate" name="reservationDate" type="date" required>
+            <input id="reservationDate" name="reservationDate" type="date" required="">
           </div>
 
           <div class="form-group">
             <label for="startTime">Start Time</label>
-            <input id="startTime" name="startTime" type="time" required>
+            <input id="startTime" name="startTime" type="time" required="">
           </div>
 
           <div class="form-group">
-            <label for="endTime">End Time</label>
-            <input id="endTime" name="endTime" type="time" required>
+            <label for="duration">Duration</label>
+            <select id="duration" name="duration" required="">
+              <option value="" selected="" disabled="">Choose a duration</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="90">1 hour 30 minutes</option>
+              <option value="120">2 hours</option>
+            </select>
           </div>
 
           <div class="form-group">
             <label for="partySize">Number of Attendees</label>
-            <input id="partySize" name="partySize" type="number" min="1" step="1" placeholder="Maximum 6" required>
+            <input id="partySize" name="partySize" type="number" min="1" step="1" placeholder="Maximum 6" required="">
             <p id="capacityMessage" class="capacity-message" aria-live="polite"></p>
           </div>
         </div>
@@ -61,17 +66,19 @@
       </form>
     </section>
 
-    <section class="form-card" aria-labelledby="lookup-heading">
-      <h2 id="lookup-heading">Find Reservation</h2>
+    <section class="form-card lookup-card" aria-labelledby="lookup-heading">
+      <h2 id="lookup-heading">Retrieve Reservation</h2>
       <form id="lookupForm">
         <div class="form-group">
           <label for="lookupId">Reservation ID</label>
-          <input id="lookupId" name="lookupId" type="text" maxlength="80" required>
+          <input id="lookupId" name="lookupId" type="text" placeholder="RSV-XXXXXXXXXX" autocomplete="off" required="">
         </div>
         <button type="submit">Find Reservation</button>
         <p id="lookupResult" class="reservation-result" role="status" aria-live="polite"></p>
+        <dl id="lookupDetails" class="lookup-details" hidden=""></dl>
       </form>
     </section>
   </main>
-</body>
-</html>
+
+
+</body></html>

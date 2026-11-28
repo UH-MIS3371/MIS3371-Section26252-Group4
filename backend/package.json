@@ -1,0 +1,13 @@
+{
+  "name": "study-room-reservation-backend",
+  "version": "1.0.0",
+  "description": "Local study room reservation API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-backend.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

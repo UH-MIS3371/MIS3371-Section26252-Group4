@@ -1,85 +1,140 @@
-# MIS 3371 — Section-26252-Group-4-Study Room Reservation System
+# MIS 3371 — Section 26252 — Group 4
 
-This repository contains design artifacts and the working transaction interface for the MIS 3371 Transaction Processing Systems I capstone project.
+## Study Room Reservation System
 
-## Project
-**Study Room Reservation System**
+This project implements a study room reservation transaction processing system using a three-tier architecture consisting of a presentation tier, application logic tier, and data tier.
 
-The system models a student reserving a study room for a specific date and time.
+## Deployed Application
 
-## Project Artifacts
-The design and checkpoint files are in the `docs` folder:
+https://main.dszcwlgff57mb.amplifyapp.com/
 
-- [Transaction Workflow](docs/workflow-v1.md)
-- [State Transition Model + State Definitions](docs/state-model-v1.md)
-- [Data Dictionary](docs/data-dictionary.md)
-- [Three-Tier Architecture](docs/architecture-v1.md)
-- [Responsibility Notes](docs/responsibility-notes.md)
-- [Week 6 JavaScript Checkpoint](docs/week6-javascript-checkpoint.md)
+Use a synthetic student ID such as TEST-001 when testing the application.
 
-The working reservation interface is in the `src` folder:
+## Implemented Features
 
-- [HTML Transaction Interface](src/index.html)
-- [CSS](src/styles.css)
-- [JavaScript](src/app.js)
+- Study room reservation interface
+- Immediate capacity validation and submission enforcement
+- Maximum capacity of six attendees
+- Reservation durations of 30, 60, 90, or 120 minutes
+- Required field validation
+- Reservation conflict detection
+- Unique reservation ID generation
+- Confirmation and rejection feedback
+- Persistent reservation storage through DynamoDB
+- Retrieval of saved AWS reservations
+- Independent Node.js backend
+- Express HTTP endpoint and JSON responses
+- Automated backend testing
 
 ## Repository Structure
 
-```text
-/
-├── README.md
-├── docs/
-    ├── workflow-v1.md
-    ├── state-model-v1.md
-    ├── data-dictionary.md
-    ├── architecture-v1.md
-    ├── responsibility-notes.md
-    └── week6-javascript-checkpoint.md
-└── src/
-    ├── index.html
-    ├── styles.css
-    └── app.js
+- src/ — HTML, CSS, and frontend JavaScript
+- backend/backend.js — Independent business logic
+- backend/server.js — Express HTTP server
+- backend/test-backend.js — Automated backend tests
+- backend/package.json — Dependencies and startup scripts
+- aws/lambda/TransactionProcessor/ — Python Lambda source
+- aws/lambda/index.mjs — Alternate Node.js Lambda implementation
+- docs/ — Design artifacts and project documentation
+
+## Local Installation
+
+Install Node.js and npm before running the application.
+
+From the repository root, execute:
+
+```bash
+cd backend
+npm install
+npm test
+npm start
 ```
 
-## Week 6 JavaScript Behavior
+Open http://localhost:3000 in a web browser.
 
-The page listens for changes to the attendee count and displays whether the group fits the six-person study room capacity. The rule is implemented in `fitsRoomCapacity(partySize)` and the visible message is updated with `textContent`.
+## Local API
 
-## Week 3 Requirements Covered
-- Clear transaction trigger and outcome
-- 5–8 meaningful workflow actions
-- At least 2 decision points
-- At least 1 exception/failure path
-- 4–6 transaction states
-- Allowed state transitions
-- Data dictionary with meaningful fields
-- Stable transaction ID and status
-- At least two timestamps
-- Three-tier architecture
-- Application-tier business rules
-- Audit/history responsibility
-- Official persistent record in the data tier
+Endpoint: POST /api/reservations
 
-## Project Assumptions
-The Week 3 activity defines the design requirements but does not specify detailed business rules for this project. The following are team design assumptions:
+Content-Type: application/json
 
-1. Campus-login integration is outside the project scope; the reservation workflow assumes an authorized student identifier is already available when the transaction begins.
-2. A room cannot be double-booked for an overlapping time slot.
-3. A reservation request becomes an official transaction when submitted, at which point it receives a stable reservation ID and `Submitted` status.
-4. A submitted request becomes either `Confirmed` or `Rejected`; every rejected request preserves a rejection reason.
-5. A confirmed reservation may be cancelled before its scheduled start time.
-6. Application logic is authoritative for critical validation, business rules, and state transitions.
-7. The data tier preserves the official transaction, status, rejection reason, timestamps, and audit record.
+Example request:
 
-## Milestone 4 — Final Technical Milestone
+```json
+{
+  "studentId": "TEST-001",
+  "room": "library-201",
+  "reservationDate": "2026-12-21",
+  "startTime": "12:00",
+  "duration": 120,
+  "partySize": 6
+}
+```
 
-[Open the verified Amplify deployment](https://main.d2pj03nocmnuea.amplifyapp.com/).
+Successful requests return HTTP 200 with confirmation details.
 
-Use a classroom test ID such as `TEST-DEMO` and an available room, date, and time. Submit the reservation, copy the confirmation ID, refresh the page, and use **Find Reservation** to retrieve it. The application saves confirmed requests in DynamoDB and rejects overlapping reservations for the same room.
+Rejected requests return HTTP 400 with a rejection reason.
 
-- [Deployed AWS configuration](docs/milestone4-aws-completion.md)
-- [Test plan and verification summary](docs/milestone4-test-plan.md)
-- [Individual demo checklist](docs/milestone4-demo-checklist.md)
-- [Lambda source](aws/lambda/index.mjs)
+Local reservations are temporarily stored in memory and are cleared when the server restarts. Persistent storage and reservation retrieval are available through the deployed AWS application.
 
-All 12 Milestone 4 cases passed on the deployed site on November 22, 2026.
+## AWS Architecture
+
+- Presentation tier: AWS Amplify
+- HTTP communication: Amazon API Gateway
+- Application logic: AWS Lambda
+- Data tier: Amazon DynamoDB
+- Lambda function: TransactionProcessor
+- AWS region: us-east-2
+- DynamoDB table: StudyRoomReservations
+- Partition key: reservation_id
+
+## Testing
+
+On November 28, 2026, all 21 automated backend tests passed.
+
+The tests cover:
+
+- Valid reservations
+- Capacity boundaries
+- Invalid attendee counts
+- Required fields
+- Invalid rooms and dates
+- Duration restrictions
+- Invalid start times
+- Overlapping reservations
+- Adjacent reservations
+- Different rooms and dates
+- Data dictionary field verification
+
+Local browser testing also verified successful reservations, overlapping reservation rejection, and adjacent reservation acceptance.
+
+AWS reservation creation and retrieval were separately demonstrated.
+
+## Project Documentation
+
+- [Transaction Workflow](docs/workflow-v1.md)
+- [State Transition Model](docs/state-model-v1.md)
+- [Data Dictionary](docs/data-dictionary.md)
+- [Three-Tier Architecture](docs/architecture-v1.md)
+- [Responsibility Matrix](docs/responsibility-notes.md)
+- [Week 6 JavaScript Checkpoint](docs/week6-javascript-checkpoint.md)
+- [Milestone 4 AWS Deployment](docs/milestone4-aws-completion.md)
+- [Milestone 4 Test Plan](docs/milestone4-test-plan.md)
+- [Individual Demonstration Checklist](docs/milestone4-demo-checklist.md)
+
+## Scope and Limitations
+
+Campus authentication is outside the project scope.
+
+Cancellation and automatic completion are documented design states but are not currently implemented.
+
+Local storage is temporary and does not replace DynamoDB.
+
+Exact facility operating hours have not been specified.
+
+The Python AWS implementation checks existing reservations before saving but does not currently guarantee atomic overlap prevention for simultaneous requests.
+
+## Project Team
+
+MIS 3371 — Section 26252 — Group 4
+University of Houston
