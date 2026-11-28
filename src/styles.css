@@ -166,7 +166,6 @@ button:hover {
   }
 }
 
-/* Frontend display of AWS Lambda reservation responses */
 .reservation-result {
   margin-top: 1rem;
   padding: 0;
@@ -177,3 +176,18 @@ button:hover {
 .reservation-result--error { color: var(--error); }
 .reservation-result--pending { color: var(--muted); }
 button:disabled { opacity: 0.6; cursor: wait; }
+
+.lookup-card { margin-top: 1.5rem; }
+.lookup-details {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) 2fr;
+  gap: 0.65rem 1rem;
+  padding: 1rem;
+  margin: 1rem 0 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.lookup-details[hidden] { display: none; }
+.lookup-details dt { color: var(--muted); font-weight: 700; }
+.lookup-details dd { margin: 0; overflow-wrap: anywhere; }
