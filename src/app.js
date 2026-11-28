@@ -1,10 +1,14 @@
-// Public AWS API Gateway endpoint for the StudyRoomReservation Lambda.
-// This is a classroom demonstration. Do not submit real student information.
-const API_URL = "https://4ceu81c65b.execute-api.us-east-1.amazonaws.com/default/StudyRoomReservation";
+const AWS_API_URL = "https://4ceu81c65b.execute-api.us-east-1.amazonaws.com/default/StudyRoomReservation";
+
+const IS_LOCAL = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_URL = IS_LOCAL ? "/api/reservations" : AWS_API_URL;
+
 const STUDY_ROOM_CAPACITY = 6;
 
 function fitsRoomCapacity(partySize) {
-  return partySize > 0 && partySize <= STUDY_ROOM_CAPACITY;
+  return Number.isInteger(partySize) &&
+    partySize > 0 &&
+    partySize <= STUDY_ROOM_CAPACITY;
 }
 
 const form = document.querySelector("form");
@@ -13,9 +17,9 @@ const capacityMessage = document.querySelector("#capacityMessage");
 const reservationResult = document.querySelector("#reservationResult");
 const submitButton = form.querySelector('button[type="submit"]');
 
-// Retain the original immediate attendee-capacity feedback.
 partySizeInput.addEventListener("input", () => {
   const raw = partySizeInput.value.trim();
+
   if (raw === "") {
     capacityMessage.textContent = "";
     capacityMessage.className = "capacity-message";
@@ -23,12 +27,14 @@ partySizeInput.addEventListener("input", () => {
   }
 
   const partySize = Number(raw);
-  const roomFits = Number.isInteger(partySize) && fitsRoomCapacity(partySize);
+  const roomFits = fitsRoomCapacity(partySize);
+
   capacityMessage.textContent = roomFits
     ? "This group fits the selected study room."
     : partySize > STUDY_ROOM_CAPACITY
       ? `This group exceeds the study room capacity of ${STUDY_ROOM_CAPACITY}.`
       : "Enter a positive whole number of attendees.";
+
   capacityMessage.className = roomFits
     ? "capacity-message capacity-message--success"
     : "capacity-message capacity-message--error";
@@ -39,9 +45,9 @@ form.addEventListener("submit", async (event) => {
 
   const partySize = Number(partySizeInput.value);
 
-  if (!Number.isInteger(partySize) || !fitsRoomCapacity(partySize)) {
+  if (!fitsRoomCapacity(partySize)) {
     reservationResult.className = "reservation-result reservation-result--error";
-    reservationResult.textContent = "Reservations require between 1 and 6 attendees.";
+    reservationResult.textContent = `Reservations require between 1 and ${STUDY_ROOM_CAPACITY} attendees.`;
     return;
   }
 
@@ -51,30 +57,37 @@ form.addEventListener("submit", async (event) => {
     reservationDate: document.querySelector("#reservationDate").value,
     startTime: document.querySelector("#startTime").value,
     endTime: document.querySelector("#endTime").value,
-    partySize: partySizeInput.value
+    partySize: IS_LOCAL ? partySize : partySizeInput.value
   };
 
   submitButton.disabled = true;
   reservationResult.className = "reservation-result reservation-result--pending";
-  reservationResult.textContent = "Sending reservation to AWS...";
+  reservationResult.textContent = "Sending reservation...";
 
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      // A string body uses text/plain, so the demo request needs no CORS preflight.
+      headers: IS_LOCAL
+        ? { "Content-Type": "application/json" }
+        : {},
       body: JSON.stringify(reservation)
     });
+
     const data = await response.json();
 
     if (!response.ok) {
       reservationResult.className = "reservation-result reservation-result--error";
-      reservationResult.textContent = `Validation error: ${data.message || "The request was not accepted."}`;
+      reservationResult.textContent = `Validation error: ${data.message || data.reason || "The request was not accepted."}`;
     } else if (data.status === "Confirmed") {
+      const reservationId = data.reservation_id || data.reservationId;
+
       reservationResult.className = "reservation-result reservation-result--success";
-      reservationResult.textContent = `Confirmed! Reservation ID: ${data.reservation_id}. ${data.message || "Reservation confirmed."}`;
+      reservationResult.textContent = IS_LOCAL
+        ? `Confirmed! Reservation ID: ${reservationId}. Local validation successful. Record not persisted.`
+        : `Confirmed! Reservation ID: ${reservationId}. ${data.message || "Reservation confirmed."}`;
     } else if (data.status === "Rejected") {
       reservationResult.className = "reservation-result reservation-result--error";
-      reservationResult.textContent = `Rejected: ${data.message || data.rejection_reason || "Reservation not available."}`;
+      reservationResult.textContent = `Rejected: ${data.message || data.reason || data.rejection_reason || "Reservation not available."}`;
     } else {
       reservationResult.className = "reservation-result reservation-result--error";
       reservationResult.textContent = data.message || "Unexpected response from the reservation service.";
@@ -82,28 +95,39 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error("API request failed:", error);
     reservationResult.className = "reservation-result reservation-result--error";
-    reservationResult.textContent = "Could not connect to AWS. Check the API URL, CORS settings, and deployment.";
+    reservationResult.textContent = "Could not connect to the reservation service.";
   } finally {
     submitButton.disabled = false;
   }
 });
 
-
 const lookupForm = document.querySelector("#lookupForm");
 const lookupId = document.querySelector("#lookupId");
 const lookupResult = document.querySelector("#lookupResult");
 const lookupButton = lookupForm.querySelector('button[type="submit"]');
-const roomLabels = { "library-201": "Library 201", "library-202": "Library 202" };
 
-lookupForm.addEventListener("submit", async event => {
+const roomLabels = {
+  "library-201": "Library 201",
+  "library-202": "Library 202"
+};
+
+lookupForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (IS_LOCAL) {
+    lookupResult.className = "reservation-result reservation-result--error";
+    lookupResult.textContent = "Reservation retrieval requires the deployed AWS database.";
+    return;
+  }
+
   lookupButton.disabled = true;
   lookupResult.className = "reservation-result reservation-result--pending";
   lookupResult.textContent = "Looking up reservation...";
 
   try {
-    const url = new URL(API_URL);
+    const url = new URL(AWS_API_URL);
     url.searchParams.set("id", lookupId.value.trim());
+
     const response = await fetch(url);
     const reservation = await response.json();
 
@@ -114,6 +138,7 @@ lookupForm.addEventListener("submit", async event => {
     }
 
     const room = roomLabels[reservation.roomId] || reservation.roomId;
+
     lookupResult.className = "reservation-result reservation-result--success";
     lookupResult.textContent = [
       reservation.status,
